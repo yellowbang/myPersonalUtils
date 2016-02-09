@@ -18,7 +18,11 @@ function run_git_push {
 		fi
 	fi
     if [[ $comfirmPushing = "yes" ]]; then
-	    git push origin $branchName:refs/for/$branchName
+    	if [[ $branchName = 'master' ]]; then
+    		git push -u origin master
+    	else
+	    	git push origin $branchName:refs/for/$branchName
+    	fi
     fi
 }
 
@@ -68,7 +72,7 @@ function nginxStartFn {
 	nginx
 	cd "$myvar"
 }
-echo 'hello'
+
 case $1 in
 	(push) 
 		echo "Start Pushing to remote"
