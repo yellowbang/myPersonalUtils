@@ -12,7 +12,7 @@ function run_git_push {
 		if [[ $branchName = 'master' ]]; then
     		echo -n "git push -u origin master? (yes/no):"
     	else
-			echo -n "git push origin $branchName:refs/for/$branchName? (yes/no):"
+		echo -n "git push origin $branchName:refs/for/$branchName? (yes/no):"
     	fi
 		read comfirmPushing
 		if [[ $comfirmPushing = 'y' || $comfirmPushing = 'ye' ||  $comfirmPushing = 'yes' ]]; then
@@ -21,13 +21,13 @@ function run_git_push {
 			comfirmPushing='no'
 		fi
 	fi
-    if [[ $comfirmPushing = "yes" ]]; then
-    	if [[ $branchName = 'master' ]]; then
-    		git push -u origin master
-    	else
-	    	git push origin $branchName:refs/for/$branchName
+    	if [[ $comfirmPushing = "yes" ]]; then
+    		if [[ $branchName = 'master' ]]; then
+    			git push -u origin master
+    		else
+	    		git push origin $branchName:refs/for/$branchName
+    		fi
     	fi
-    fi
 }
 
 function getCurrentBranch {
