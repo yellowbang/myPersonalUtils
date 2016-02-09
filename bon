@@ -9,7 +9,11 @@ function run_git_push {
 	local branchName=$1
 	comfirmPushing="yes"
 	if [[ $2 = 'c' || $2 = 'current' || $2 = 'currentbranch' ]]; then
-		echo -n "git push origin $branchName:refs/for/$branchName? (yes/no):"
+		if [[ $branchName = 'master' ]]; then
+    		echo -n "git push -u origin master? (yes/no):"
+    	else
+			echo -n "git push origin $branchName:refs/for/$branchName? (yes/no):"
+    	fi
 		read comfirmPushing
 		if [[ $comfirmPushing = 'y' || $comfirmPushing = 'ye' ||  $comfirmPushing = 'yes' ]]; then
 			comfirmPushing="yes"
