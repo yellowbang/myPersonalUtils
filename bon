@@ -1,0 +1,81 @@
+#!/bin/bash
+
+branches=('bzmr1' 'bzmr2' 'congo')
+bzmr1=('1' 'bzmr1' 'maint' 'brazos_maint' 'rel/brazos_maint')
+bzmr2=('2' 'bzmr2' 'rel/bzmr2')
+congo=('congo' 'trunk')
+
+function run_git_push {
+	local branchName=$1
+	comfirmPushing="yes"
+	if [[ $2 = 'c' || $2 = 'current' || $2 = 'currentbranch' ]]; then
+		echo -n "git push origin $branchName:refs/for/$branchName? (yes/no):"
+		read comfirmPushing
+		if [[ $comfirmPushing = 'y' || $comfirmPushing = 'ye' ||  $comfirmPushing = 'yes' ]]; then
+			comfirmPushing="yes"
+		else 
+			comfirmPushing='no'
+		fi
+	fi
+    if [[ $comfirmPushing = "yes" ]]; then
+	    git push origin $branchName:refs/for/$branchName
+    fi
+}
+
+function getCurrentBranch {
+	git rev-parse --abbrev-ref HEAD
+}
+
+function findBranch {
+	local branchNickName=$1
+	local branchName='' 
+	if [[ $1 = 'c' || $1 = 'current' || $1 = 'currentbranch' ]]; then
+		branchName=$(getCurrentBranch)
+		echo
+	fi
+	for (( i = 0; i < ${#branches[@]}; i++ )); do
+		if [[ -n $branchName ]]; then
+			break
+		fi
+		eval "branch=\${${branches[i]}[@]}"
+		branch=($branch)
+		branchLen=${#branch[@]}
+		for (( j = 0; j < branchLen; j++ )); do
+			if [[ $branchNickName = ${branch[j]} ]]; then
+				branchName=${branch[branchLen-1]}
+				break
+			fi
+		done
+	done
+	echo $branchName
+}
+
+function pushFn {
+	local branchName=$(findBranch $1)
+	while [[ -z $branchName ]]; do
+		echo "Branch is not defined or an invalid branch is given."
+        echo -n "Please enter branch name:"
+        read branchName
+		branchName=$(findBranch $branchName)
+	done
+	
+	run_git_push $branchName $2
+}
+
+function nginxStartFn {
+	myvar="$PWD"
+	cd /usr/local/etc/nginx/
+	nginx
+	cd "$myvar"
+}
+
+case $1 in
+	(push) 
+		echo "Start Pushing to remote"
+		branchName="$2"
+		pushFn $branchName $2;;
+	(nginx)
+		echo "Start Nginx"
+		nginxStartFn;;
+esac
+
