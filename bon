@@ -68,7 +68,7 @@ function nginxStartFn {
 	nginx
 	cd "$myvar"
 }
-
+echo 'hello'
 case $1 in
 	(push) 
 		echo "Start Pushing to remote"
