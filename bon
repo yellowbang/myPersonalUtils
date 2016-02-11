@@ -7,7 +7,7 @@ congo=('congo' 'trunk')
 
 function run_git_push {
 	local branchName=$1
-	comfirmPushing="yes"
+	local comfirmPushing="yes"
 	
 	if [[ $2 = 'c' || $2 = 'current' || $2 = 'currentbranch' ]]; then
 		
@@ -83,13 +83,43 @@ function nginxStartFn {
 	cd "$myvar"
 }
 
+function stashFn {
+	local stashMsg=$@
+	while [[ -z $stashMsg ]]; do
+		echo -n "No stash message. Please add: "
+		read stashMsg
+	done
+	echo git stash save "'$stashMsg'"
+	git stash save "$stashMsg"
+}
+
+function commitFn {
+	local commitMsg=$@
+	while [[ -z $commitMsg ]]; do
+		echo -n "No commit message. Please add: "
+		read commitMsg
+	done
+	echo git commit -m "'$commitMsg'"
+	git commit -m "$commitMsg"
+}
+
 case $1 in
-	(push) 
-		echo "Start Pushing to remote"
-		branchName="$2"
-		pushFn $branchName $2;;
+	(addcommit)
+		echo "Run git add and commit -m"
+		git add -u
+		commitFn ${@:2};;
+	(commit)
+		echo "Run git commit -m"
+		commitFn ${@:2};;
 	(nginx)
 		echo "Start Nginx"
 		nginxStartFn;;
+	(push) 
+		echo "git push to remote"
+		branchName="$2"
+		pushFn $branchName $2;;
+	(stash)
+		echo "Run git stash save"
+		stashFn ${@:2};;
 esac
 
