@@ -1,9 +1,8 @@
 #!/bin/bash
 
-branches=('bzmr1' 'bzmr2' 'congo')
-bzmr1=('1' 'bzmr1' 'maint' 'brazos_maint' 'rel/brazos_maint')
-bzmr2=('2' 'bzmr2' 'rel/bzmr2')
-congo=('congo' 'trunk')
+branches=('bzmr2' 'congo')
+bzmr2=('2' 'bzmr2' 'maint' 'brazos_maint' 'rel/brazos_maint')
+congo=('congo' 'rel/congo')
 
 function run_git_push {
 	local branchName=$1
@@ -64,6 +63,11 @@ function findBranch {
 	echo $branchName
 }
 
+
+function pullFn {
+	git pull --rebase
+}
+
 function pushFn {
 	local branchName=$(findBranch $1)
 	while [[ -z $branchName ]]; do
@@ -114,6 +118,9 @@ case $1 in
 	(nginx)
 		echo "Start Nginx"
 		nginxStartFn;;
+	(pull) 
+		echo "git pull --rebase"
+		pullFn;;
 	(push) 
 		echo "git push to remote"
 		branchName="$2"
